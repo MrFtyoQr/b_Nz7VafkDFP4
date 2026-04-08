@@ -7,7 +7,10 @@
       "Bash(mkdir -p \"E:/b_Nz7VafkDFP4/app/api/companies/[id]\")",
       "Bash(mkdir -p \"E:/b_Nz7VafkDFP4/app/api/benefits/[id]\")",
       "Bash(docker compose:*)",
-      "Bash(curl -s http://localhost:3001/health)"
+      "Bash(curl -s http://localhost:3001/health)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   }
 }
