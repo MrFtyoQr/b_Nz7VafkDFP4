@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -E '\\\\.\\(tsx?|jsx?|env|json|yaml|yml|md|dockerfile\\)$')",
+      "Bash(find /e/b_Nz7VafkDFP4 -type f -path *api/* -name *.ts -o -path *api/* -name *.tsx)",
+      "Bash(npm --version)",
+      "Bash(mkdir -p \"E:/b_Nz7VafkDFP4/app/api/companies/[id]\")",
+      "Bash(mkdir -p \"E:/b_Nz7VafkDFP4/app/api/benefits/[id]\")",
+      "Bash(docker compose:*)",
+      "Bash(curl -s http://localhost:3001/health)"
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+# ============================================================
+# Cuponera CAMSA — Docker Compose
+# Levanta el backend Express. El frontend Next.js corre por separado
+# con `pnpm dev` (dev) o en Vercel/servidor (prod).
+# ============================================================
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cuponera-backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./backend/.env
+    environment:
+      NODE_ENV: production
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+# Para desarrollo local también puedes agregar un perfil:
+# docker compose --profile dev up
+
+networks:
+  default:
+    name: cuponera-network
