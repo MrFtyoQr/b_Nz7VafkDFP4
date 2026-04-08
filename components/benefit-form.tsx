@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { toast } from 'sonner'
-import { Loader2, ArrowLeft, Receipt } from 'lucide-react'
+import { Loader2, ArrowLeft, Receipt, ImagePlus, X, Ticket } from 'lucide-react'
 import Link from 'next/link'
 import { Benefit, BenefitType, AssignmentType, Company, BENEFIT_TYPE_INFO } from '@/lib/types'
 
@@ -25,11 +25,13 @@ const benefitTypes: BenefitType[] = ['descuento', 'pago_cubierto', 'informativo'
 const assignmentTypes: AssignmentType[] = ['todos', 'grupo', 'individual']
 
 export function BenefitForm({ benefit }: BenefitFormProps) {
-  const router = useRouter()
+  const router    = useRouter()
   const isEditing = !!benefit
-  const supabase = createClient()
+  const supabase  = createClient()
+  const fileRef   = useRef<HTMLInputElement>(null)
 
-  const [loading, setLoading] = useState(false)
+  const [loading,   setLoading]   = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [companies, setCompanies] = useState<Company[]>([])
   const [formData, setFormData] = useState({
     titulo:               benefit?.titulo               || '',
@@ -51,6 +53,40 @@ export function BenefitForm({ benefit }: BenefitFormProps) {
     supabase.from('companies').select('*').eq('activo', true).order('nombre')
       .then(({ data }) => setCompanies(data || []))
   }, [])
+
+  // ── Subir imagen del beneficio ────────────────────────────────────
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 5 * 1024 * 1024) { toast.error('Imagen máximo 5 MB'); return }
+
+    setUploading(true)
+    try {
+      const ext  = file.name.split('.').pop()
+      const slug = formData.titulo
+        ? formData.titulo.toLowerCase().replace(/[^a-z0-9]/g, '-').substring(0, 40)
+        : `beneficio-${Date.now()}`
+      const path = `beneficios/${slug}-${Date.now()}.${ext}`
+
+      const { error: uploadErr } = await supabase.storage
+        .from('cuponera-assets')
+        .upload(path, file, { upsert: true })
+
+      if (uploadErr) throw uploadErr
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('cuponera-assets')
+        .getPublicUrl(path)
+
+      set('imagen_url', publicUrl)
+      toast.success('Imagen subida correctamente')
+    } catch (err: any) {
+      toast.error('Error al subir imagen', { description: err.message })
+    } finally {
+      setUploading(false)
+      if (fileRef.current) fileRef.current.value = ''
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -156,14 +192,35 @@ export function BenefitForm({ benefit }: BenefitFormProps) {
               <Textarea id="descripcion" value={formData.descripcion} onChange={e => set('descripcion', e.target.value)} placeholder="Describe el beneficio, cómo canjearlo y sus condiciones..." rows={3} disabled={loading} />
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="fecha_vencimiento">Vence el</Label>
-                <Input id="fecha_vencimiento" type="date" value={formData.fecha_vencimiento} onChange={e => set('fecha_vencimiento', e.target.value)} disabled={loading} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="imagen_url">URL imagen (opcional)</Label>
-                <Input id="imagen_url" type="url" value={formData.imagen_url} onChange={e => set('imagen_url', e.target.value)} placeholder="https://..." disabled={loading} />
+            <div className="space-y-2">
+              <Label htmlFor="fecha_vencimiento">Vence el</Label>
+              <Input id="fecha_vencimiento" type="date" value={formData.fecha_vencimiento} onChange={e => set('fecha_vencimiento', e.target.value)} disabled={loading} />
+            </div>
+
+            {/* Imagen del beneficio */}
+            <div className="space-y-2">
+              <Label>Imagen del beneficio (opcional)</Label>
+              <div className="flex items-center gap-4">
+                <div className="w-20 h-20 rounded-xl border-2 border-dashed border-border flex items-center justify-center bg-muted shrink-0 overflow-hidden">
+                  {formData.imagen_url
+                    ? <img src={formData.imagen_url} alt="Imagen" className="w-full h-full object-cover" />
+                    : <Ticket className="h-8 w-8 text-muted-foreground" />}
+                </div>
+                <div className="space-y-2">
+                  <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading || loading} />
+                  <Button type="button" variant="outline" size="sm" onClick={() => fileRef.current?.click()} disabled={uploading || loading}>
+                    {uploading
+                      ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Subiendo...</>
+                      : <><ImagePlus className="h-4 w-4 mr-2" />Subir imagen</>}
+                  </Button>
+                  {formData.imagen_url && (
+                    <Button type="button" variant="ghost" size="sm" className="text-destructive hover:text-destructive"
+                      onClick={() => set('imagen_url', '')} disabled={uploading || loading}>
+                      <X className="h-4 w-4 mr-1" />Quitar imagen
+                    </Button>
+                  )}
+                  <p className="text-xs text-muted-foreground">PNG, JPG — máx. 5 MB</p>
+                </div>
               </div>
             </div>
 
