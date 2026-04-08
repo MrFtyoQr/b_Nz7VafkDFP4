@@ -44,9 +44,14 @@ export function EmployeeNavbar({ profile }: EmployeeNavbarProps) {
                 </p>
               </div>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={signOut} className="text-destructive">
-                <LogOut className="mr-2 h-4 w-4" />
-                Cerrar sesión
+              <DropdownMenuItem asChild>
+                <button
+                  onClick={() => signOut()}
+                  className="w-full flex items-center text-destructive cursor-pointer"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Cerrar sesión
+                </button>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
