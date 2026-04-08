@@ -37,7 +37,6 @@ export function DeleteBenefitButton({ benefitId, benefitTitle }: DeleteBenefitBu
       router.refresh()
     } catch (error) {
       toast.error('Error al eliminar el beneficio')
-      console.error(error)
     } finally {
       setLoading(false)
     }

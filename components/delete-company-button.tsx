@@ -37,7 +37,6 @@ export function DeleteCompanyButton({ companyId, companyName }: DeleteCompanyBut
       router.refresh()
     } catch (error) {
       toast.error('Error al eliminar la empresa')
-      console.error(error)
     } finally {
       setLoading(false)
     }

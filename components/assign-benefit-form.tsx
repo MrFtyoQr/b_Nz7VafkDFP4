@@ -54,8 +54,7 @@ export function AssignBenefitForm({ benefit, employees, assignedUserIds }: Assig
       router.push('/admin/cupones')
       router.refresh()
     } catch (error: any) {
-      toast.error('Error al actualizar las asignaciones', { description: error.message })
-      console.error(error)
+      toast.error('Error al actualizar las asignaciones')
     } finally {
       setLoading(false)
     }

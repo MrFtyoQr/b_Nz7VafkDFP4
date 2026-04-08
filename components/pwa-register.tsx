@@ -8,15 +8,11 @@ export function PWARegister() {
       navigator.serviceWorker
         .register('/sw.js')
         .then((registration) => {
-          console.log('Service Worker registered with scope:', registration.scope)
-          
-          // Check for updates periodically
           registration.addEventListener('updatefound', () => {
             const newWorker = registration.installing
             if (newWorker) {
               newWorker.addEventListener('statechange', () => {
                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                  // New content is available, prompt user to refresh
                   if (window.confirm('Nueva versión disponible. ¿Deseas actualizar?')) {
                     window.location.reload()
                   }
@@ -25,9 +21,7 @@ export function PWARegister() {
             }
           })
         })
-        .catch((error) => {
-          console.error('Service Worker registration failed:', error)
-        })
+        .catch(() => {})
     }
   }, [])
 
