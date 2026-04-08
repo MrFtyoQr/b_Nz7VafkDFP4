@@ -14,6 +14,9 @@ const reportsRouter = require('./routes/reports')
 const app = express()
 const PORT = process.env.PORT || 3001
 
+// Confiar en el proxy de Vercel / Railway / Render para X-Forwarded-For
+app.set('trust proxy', 1)
+
 // ============================================================
 // Seguridad: cabeceras HTTP con Helmet
 // ============================================================

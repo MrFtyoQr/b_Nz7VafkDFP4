@@ -30,8 +30,8 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (error) {
-    console.error(error)
-    return NextResponse.json({ error: 'Error al crear la empresa' }, { status: 500 })
+    console.error('[companies POST]', error)
+    return NextResponse.json({ error: error.message || 'Error al crear la empresa' }, { status: 500 })
   }
   return NextResponse.json(data, { status: 201 })
 }

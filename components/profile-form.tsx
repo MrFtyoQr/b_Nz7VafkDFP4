@@ -54,8 +54,17 @@ export function ProfileForm({ profile }: { profile: Profile }) {
         .from('cuponera-assets')
         .getPublicUrl(path)
 
+      // Auto-guardar foto_url en el perfil inmediatamente
+      const res = await fetch('/api/profile', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, foto_url: publicUrl }),
+      })
+      if (!res.ok) throw new Error('Error al guardar foto en perfil')
+
       set('foto_url', publicUrl)
-      toast.success('Foto cargada — guarda tu perfil para aplicar los cambios')
+      toast.success('Foto de perfil actualizada')
+      router.refresh()
     } catch (err: any) {
       toast.error('Error al subir foto', { description: err.message })
     } finally {

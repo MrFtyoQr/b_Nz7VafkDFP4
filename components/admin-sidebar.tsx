@@ -18,7 +18,7 @@ import {
   X
 } from 'lucide-react'
 import { useState } from 'react'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 
 const navItems = [
   { href: '/admin',            label: 'Dashboard',  icon: LayoutDashboard },
@@ -106,6 +106,7 @@ export function AdminSidebar() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-64 bg-sidebar border-sidebar-border">
+              <SheetTitle className="sr-only">Menú de navegación</SheetTitle>
               <NavContent onItemClick={() => setOpen(false)} />
             </SheetContent>
           </Sheet>

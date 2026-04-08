@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useAuth } from '@/lib/auth-context'
 import { Profile } from '@/lib/types'
-import { User, LogOut, Settings } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 
 interface EmployeeNavbarProps {
   profile: Profile | null
@@ -43,15 +43,6 @@ export function EmployeeNavbar({ profile }: EmployeeNavbarProps) {
                   {profile?.email}
                 </p>
               </div>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <User className="mr-2 h-4 w-4" />
-                Mi Perfil
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Settings className="mr-2 h-4 w-4" />
-                Configuración
-              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={signOut} className="text-destructive">
                 <LogOut className="mr-2 h-4 w-4" />
